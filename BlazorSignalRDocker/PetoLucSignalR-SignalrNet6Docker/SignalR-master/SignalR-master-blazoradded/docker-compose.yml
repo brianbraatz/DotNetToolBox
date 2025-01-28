@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  signalr:
+    image: ${DOCKER_REGISTRY-}signalr
+    build:
+      context: .
+      dockerfile: Dockerfile

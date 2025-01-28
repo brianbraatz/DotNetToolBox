@@ -1,0 +1,36 @@
+@inject NavigationManager NavigationManager
+
+<hr>
+
+<div class="col-12">
+    <a class="btn btn-block btn-social btn-twitter" @onclick="TwitterSignIn">
+        <span class="fa fa-twitter"></span> <b>Sign in with Twitter</b>
+    </a>
+    <br />
+    <a class="btn btn-block btn-social btn-facebook" @onclick="FacebookSignIn">
+        <span class="fa fa-facebook"></span> <b>Sign in with Facebook</b>
+    </a>
+    <br />
+    <a class="btn btn-block btn-social btn-google" @onclick="GoogleSignIn">
+        <span class="fa fa-google"></span> <b>Sign in with Google</b>
+    </a>
+</div>
+
+@code {
+    
+    private void TwitterSignIn()
+    {
+        NavigationManager.NavigateTo("user/twittersignin?redirectUri=/profile", true);
+    }
+
+    private void GoogleSignIn()
+    {
+        NavigationManager.NavigateTo("user/googlesignin?redirectUri=/profile", true);
+    }
+
+    private void FacebookSignIn()
+    {
+        NavigationManager.NavigateTo("user/facebooksignin?redirectUri=/profile", true);
+    }
+
+}

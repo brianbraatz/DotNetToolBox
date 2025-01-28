@@ -1,0 +1,57 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/app/lib.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery/dist/jquery.min.js",
+      "wwwroot/lib/bootstrap/dist/js/bootstrap.min.js",
+      "wwwroot/lib/vue/dist/vue.min.js",
+      "wwwroot/lib/vue-router/dist/vue-router.min.js",
+      "wwwroot/lib/vue-resource/vue-resource.min.js",
+      "wwwroot/lib/signalr/jquery.signalr-2.2.1.min.js",
+      "wwwroot/lib/ifvisible.js/src/ifvisible.min.js"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/app/app.js",
+    "inputFiles": [
+      "wwwroot/js/auth.js",
+      "wwwroot/js/base.js",
+      "wwwroot/js/login.js",
+      "wwwroot/js/host.js",
+      "wwwroot/js/container.js",
+      "wwwroot/js/main.js"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/app/app.min.js",
+    "inputFiles": [
+      "wwwroot/js/auth.js",
+      "wwwroot/js/base.js",
+      "wwwroot/js/login.js",
+      "wwwroot/js/host.js",
+      "wwwroot/js/container.js",
+      "wwwroot/js/main.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": false
+    },
+    "sourceMap": false
+  }
+]

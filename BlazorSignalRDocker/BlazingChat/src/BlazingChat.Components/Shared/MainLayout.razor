@@ -1,0 +1,65 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager _navigationManager
+@inject ILoginViewModel _loginViewModel
+@inject IJSRuntime _jsRuntime
+@inject IAccessTokenService _accessTokenService
+
+<div class="page">
+    <div class="sidebar">
+        <AuthorizeView>
+            <Authorized>
+                <NavMenu />
+            </Authorized>
+        </AuthorizeView>
+    </div>
+    <BlazoredToasts Position="ToastPosition.BottomRight"
+                    Timeout="3"
+                    IconType="IconType.FontAwesome"
+                    SuccessClass="success-toast-override"
+                    SuccessIcon="fa fa-thumbs-up"
+                    ErrorIcon="fa fa-bug" />
+    <div class="main">
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <p id="p_welcome_message" style="font-size: larger;"><b>Hello, @context.User?.Identity?.Name</b></p> &nbsp; &nbsp;
+                    <button class="btn btn-danger" @onclick="LogoutUser">Logout</button>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code {
+    
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if(firstRender)
+        {
+            var jwtToken = await _accessTokenService.GetAccessTokenAsync("jwt_token");
+            if (jwtToken == null) return;
+
+            jwtToken = $@"""{jwtToken}""";
+            User currentUser = await _loginViewModel.GetUserByJWTAsync(jwtToken);
+
+            if (currentUser != null)
+            {
+                //setting the themeName parameter for JS function
+                var themeName = currentUser.DarkTheme == 1 ? "dark" : "light";
+                //calling the JS function
+                var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/BlazingChat.Components/js/site.js");
+                await module.InvokeVoidAsync("setTheme", themeName);
+            }
+        }
+    }
+
+    private async Task LogoutUser()
+    {
+        await _accessTokenService.RemoveAccessTokenAsync("jwt_token");
+        _navigationManager.NavigateTo("/", true);
+    }
+}

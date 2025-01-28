@@ -1,0 +1,10 @@
+﻿
+
+this version works on docker and debug
+but its .net 6
+going to upgrade to 8 so we can do this 
+
+
+
+https://learn.microsoft.com/en-us/aspnet/core/blazor/tutorials/signalr-blazor?view=aspnetcore-6.0&tabs=visual-studio
+

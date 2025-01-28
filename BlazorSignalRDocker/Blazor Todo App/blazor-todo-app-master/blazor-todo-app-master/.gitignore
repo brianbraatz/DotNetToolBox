@@ -1,0 +1,9 @@
+/BlazorTodoApp/Client/bin/
+/BlazorTodoApp/Client/obj
+/BlazorTodoApp/Server/obj
+/BlazorTodoApp/Server/bin
+/BlazorTodoApp/Shared/bin
+/BlazorTodoApp/Shared/obj
+/.vs/
+/BlazorTodoApp/Client/BlazorTodoApp.Client.csproj.user
+/BlazorTodoApp/Server/BlazorTodoApp.Server.csproj.user

@@ -1,0 +1,92 @@
+﻿@page "/settings"
+
+@using System.Security.Claims
+
+@inject ISettingsViewModel _settingsViewModel
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRuntime
+@inject IToastService _toastService
+
+<h2 class="white-text"><b>Settings</b></h2> 
+<hr class="white-horizontal-line"/>
+
+<div class="col-12">
+    <div class="row">
+        <input type="button" class="btn btn-primary" value="Save Settings" @onclick="SaveSettings"/>
+    </div>
+</div>
+<br />
+<div class="col-12">
+    <div class="row">
+        <input type="checkbox" Disabled="@(!IsUserAuthorized)" 
+            @bind="@_settingsViewModel.Notifications" 
+            Style="margin-bottom: 20px" />
+        <span>&nbsp; &nbsp;</span>
+        <label class="white-text"> Notifications </label>  
+    </div>
+    <div class="row">
+        <input type="checkbox" Disabled="@(!IsUserAuthorized)" 
+            @bind="@_settingsViewModel.DarkTheme" 
+            Style="margin-bottom: 20px" />
+        <span>&nbsp; &nbsp;</span>
+        <label class="white-text"> Dark Theme </label>    
+    </div>
+</div>
+<ActivateMessage></ActivateMessage>
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; } = default!;
+
+    [CascadingParameter]
+    public Error Error { get; set; } = default!;
+
+    private bool IsUserAuthorized { get; set; }
+
+    protected override async Task OnInitializedAsync() 
+    {
+        try
+        {
+            var authState = await AuthenticationState;//_authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if(user.Identity is { IsAuthenticated: true })
+            {
+                var claim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+                _settingsViewModel.UserId = Convert.ToInt64(claim?.Value);
+                IsUserAuthorized = user.IsInRole("admin") || user.IsInRole("general");
+
+                await _settingsViewModel.GetProfile();
+            }
+            else
+            {
+                _navigationManager.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Error.ProcessError(ex);
+        }
+    } 
+
+    private async Task UpdateTheme()
+    {
+        var themeName = _settingsViewModel.DarkTheme ? "dark" : "light";
+
+        var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/BlazingChat.Components/js/site.js");
+        await module.InvokeVoidAsync("setTheme", themeName);
+
+        await _settingsViewModel.UpdateTheme();
+    }
+
+    private async Task UpdateNotifications()
+    {
+        await _settingsViewModel.UpdateNotifications();
+    }
+
+    private async Task SaveSettings()
+    {
+        await UpdateTheme();
+        await UpdateNotifications();   
+        _toastService.ShowSuccess("Settings have been saved successfully");
+    }
+}

@@ -1,0 +1,86 @@
+﻿@*@page
+    <div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+    <div class="col-2">User</div>
+    <div class="col-4"><input type="text" id="userInput" /></div>
+    </div>
+    <div class="row">
+    <div class="col-2">Message</div>
+    <div class="col-4"><input type="text" id="messageInput" /></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+    <div class="col-6">
+    <input type="button" id="sendButton" value="Send Message" />
+    </div>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-12">
+    <hr />
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-6">
+    <ul id="messagesList"></ul>
+    </div>
+    </div>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>*@
+@page
+@using System.Collections
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<h2>Environment variables</h2>
+<table class="table">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Value</th>
+    </tr>
+    @{
+        foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables())
+        {            
+            <tr>
+                <td>@variable.Key</td>
+                <td>@variable.Value</td>
+            </tr>
+        }
+    }
+</table>
+}
+<h1 class="display-4">Welcome @Model.serverName</h1>
+<h2 id="currTime" class="display-4">ServerTime</h2>
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-2">User</div>
+        <div class="col-4"><input type="text" id="userInput" /></div>
+    </div>
+    <div class="row">
+        <div class="col-2">Message</div>
+        <div class="col-4"><input type="text" id="messageInput" /></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">
+            <input type="button" id="sendButton" value="Send Message" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <ul id="messagesList"></ul>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+@*<script src="~/js/chat.js"></script>*@
+<script src="~/js/time.js"></script>

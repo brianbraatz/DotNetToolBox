@@ -1,0 +1,13 @@
+﻿<h3>TodoList</h3>
+
+<ul class="list-group">
+    @foreach (var TodoModel in TodoModels)
+    {
+    <li class="list-group-item" style="color:@(TodoModel.Done ? "lightgray" : "inherit");">
+
+        <input type="checkbox" checked="@TodoModel.Done" @onchange="e => ToggleDone(TodoModel)">
+        @TodoModel.Value
+    </li>
+    }
+</ul>
+

@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main">
+    <div class="top-row">
+        <div>
+            <AuthorizeView>
+                <Authorized>
+                        <h4>Welcome, <b>@context.User.Identity.Name</b></h4>                
+                    </Authorized>            
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <div class="content px-4">
+        @Body
+    </div>
+</div>
+
+@code{
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("user/signout", true);
+    }
+
+}

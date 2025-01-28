@@ -1,0 +1,64 @@
+@page "/assignroles"
+
+@inject IAssignRolesViewModel _assignRolesViewModel
+@inject IToastService _toastService
+
+@attribute [Authorize(Roles = "admin")]
+
+<h2 class="white-text"><b>Assign Roles</b></h2>
+<hr class="white-horizontal-line" />
+
+<div class="col-12 row">
+    <input type="text" class="col-12 form-control dark-theme-textbox" placeholder="search" />
+</div>
+<br />
+
+@if (_assignRolesViewModel.AllUsers?.Any() ?? false)
+{
+    foreach (var user in _assignRolesViewModel.AllUsers)
+    {
+        <div class="list-group-item list-group-item-action flex-column align-items-start contact-list-item" style="height: 55px;">
+            <div class="row col-12">
+                <div class="col-6" style="font-size: large;">
+                    @user.EmailAddress
+                </div>
+                <div class="col-3">
+                    <select class="form-control" 
+                            name="roles" 
+                            id="roles" 
+                            @onchange="@AssignRole">
+                        <option value=@($"#{user.UserId}")>None</option>
+                        <option value=@($"admin#{user.UserId}") selected="@(user.Role=="admin")">Admin</option>
+                        <option value=@($"general#{user.UserId}") selected="@(user.Role =="general")">General</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-danger" @onclick="@(() => DeleteUser(user.UserId))">Delete</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+<br />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await _assignRolesViewModel.LoadAllUsers();
+    }
+
+    private async Task DeleteUser(long userId)
+    {
+        await _assignRolesViewModel.DeleteUser(userId);
+        await _assignRolesViewModel.LoadAllUsers();
+        StateHasChanged();
+    }
+
+    private async Task AssignRole(ChangeEventArgs eventArgs)
+    {
+        var selectedValues = (eventArgs.Value?.ToString() ?? "").Split('#');
+
+        await _assignRolesViewModel.AssignRole(Convert.ToInt64(selectedValues[1]), selectedValues[0]);
+        _toastService.ShowSuccess("Role updated successfully");
+    }
+}

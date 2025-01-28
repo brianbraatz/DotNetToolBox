@@ -1,0 +1,110 @@
+@page "/"
+@page "/{RegisterRedirect:bool}"
+@using Microsoft.Extensions.Options
+
+@inject ILoginViewModel _loginViewModel
+@inject NavigationManager _navigationManager
+@inject IToastService _toastService
+@inject IAccessTokenService _accessTokenService
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IOptions<ApplicationSettings> _applicationSettings
+
+
+<hr class="white-horizontal-line" />
+<div class="col-12">
+    <h2 class="white-text">
+        <b>Login</b>
+    </h2>
+</div>
+<SpinLoader IsLoading="IsLoading">
+    <LoadingTemplate>
+        <div class="col-12" style="background-color: lightgray; height:400px; vertical-align:middle">
+            <br /><br />
+            <Chase Center="true" Color="blue" Size="70px"></Chase>
+        </div>
+    </LoadingTemplate>
+    <ContentTemplate>
+        <hr class="white-horizontal-line" />
+        <EditForm Model="@_loginViewModel" OnValidSubmit="@AuthenticateJWT">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="col-xl-6 col-md-8 col-12">
+                <input id="input_emailaddress" @onkeypress="OnKeyPress" type="text" @bind="_loginViewModel.EmailAddress" class="form-control dark-theme-textbox" placeholder="email address">
+            </div>
+            <br />
+            <div class="col-xl-6 col-md-8 col-12">
+                <input id="input_password" @onkeypress="OnKeyPress" type="password" @bind="_loginViewModel.Password" class="form-control dark-theme-textbox" placeholder="password">
+            </div>
+            <br />
+            <div class="col-xl-6 col-md-8 col-12 row">
+                <div class="col-xl-2 col-lg-2 col-md-6 col-sm-3 col-3">
+                    <button id="button_login" type="submit" class="btn btn-danger">Login</button>
+                </div>
+                <div class="col-xl-5 col-lg-5 col-md-6 col-sm-9 col-9">
+                    <a style="font-weight: bold;" href="/createaccount">Create an account</a>
+                </div>
+            </div>
+        </EditForm>
+        <hr class="white-horizontal-line" />
+        <ExternalLogins />
+        <div class="col-12">
+            <p style="font-size: larger;" class="white-text">
+                BlazingChat is a sample Blazor WebAssembly app made for the community
+            </p>
+        </div>
+    </ContentTemplate>
+</SpinLoader>
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; } = null!;
+
+    [Parameter]
+    public bool RegisterRedirect { get; set; }
+
+    private bool IsLoading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Initializing the login details for John Smith
+        if(!RegisterRedirect)
+        {
+            _loginViewModel.EmailAddress = "john.smith@gmail.com";
+            _loginViewModel.Password = "john.smith";
+        }
+
+        var authState = await AuthenticationState;
+
+        if (authState.User.Identity is { IsAuthenticated: true })
+        {
+            _navigationManager.NavigateTo("/profile");
+        }
+    }
+
+    private async Task OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await AuthenticateJWT();
+    }
+
+    private async Task AuthenticateJWT()
+    {
+        IsLoading = true;
+        AuthenticationResponse authenticationResponse = await _loginViewModel.AuthenticateJWT();
+        if (authenticationResponse.Token != string.Empty)
+        {
+            await _accessTokenService.SetAccessTokenAsync("jwt_token", authenticationResponse.Token);
+            await ((CustomAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated();
+            
+            if(_applicationSettings.Value.UIFramework == "Server")
+                _navigationManager.NavigateTo("/profile");
+            else
+                _navigationManager.NavigateTo("/profile", true);
+        }
+        else
+        {
+            _toastService.ShowError("Invalid username or password");
+        }
+        IsLoading = false;
+    }
+}

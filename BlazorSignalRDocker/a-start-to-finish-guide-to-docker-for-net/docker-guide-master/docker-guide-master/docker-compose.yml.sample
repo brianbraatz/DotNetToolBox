@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  docker-guide-db:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - type: volume
+        source: docker-guide-data
+        target: /var/opt/mssql
+
+  docker-guide-api:
+    image: docker-guide/api
+    environment:
+      DB_CONNECTIONSTRING: "Data Source='docker-guide-db';Initial Catalog='DockerSample';User ID=sa;Password=${DB_PASSWORD}"
+    ports:
+      - "7992:80"
+    depends_on:
+     - docker-guide-db
+
+  docker-guide-ui:
+    image: docker-guide/ui
+    environment:
+      API_URL: http://public-ip:7992
+    ports:
+      - "7993:80"
+    depends_on:
+     - docker-guide-api
+  
+volumes:
+  docker-guide-data:

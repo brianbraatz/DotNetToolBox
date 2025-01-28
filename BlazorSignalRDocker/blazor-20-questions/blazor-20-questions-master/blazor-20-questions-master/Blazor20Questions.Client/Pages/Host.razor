@@ -1,0 +1,109 @@
+﻿@page "/host/{Id:guid}"
+@using Blazor20Questions.Shared
+@inject IUriHelper UriHelper
+@inherits PlayerComponent
+
+<h1>20 Questions - Host Controls</h1>
+
+<div class="link">
+    <div>Send this link to your friends to join in the fun!</div>
+    <input type="text" readonly value="@UriHelper.GetBaseUri()game/@Id" onclick="this.select()" size="80" />
+</div>
+@if (_error)
+{
+    <div class="error">
+        Error loading game: @_errorMessage
+    </div>
+}
+else if (_game != null)
+{
+    <Rules game="@_game" />
+
+    if (_game.Complete)
+    {
+        if (_game.Won)
+        {
+            <div class="success">The guesser(s) guessed correctly!</div>
+        }
+        else
+        {
+            <div class="fail">The guesser(s) did not guess "@_game.Subject" in time</div>
+        }
+    }
+    else
+    {
+        <div class="host game">
+            <span>Remaining Questions: @_game.QuestionsRemaining</span>
+
+            <h2>Questions</h2>
+            @if (!_game.Questions.Any())
+            {
+                <div>No questions asked yet!</div>
+            }
+            else
+            {
+                <div class="questions">
+                    @foreach (var question in _game.Questions)
+                    {
+                        <div class="question">
+                            <span class="question-text">@question.Question</span>
+                            @if (question.HasAnswer)
+                            {
+                                <span class="question-answer">@((question.Answer.Value) ? "Yes" : "No")</span>
+                            }
+                            else
+                            {
+                                <span class="question-no"><button onclick="@(() => Answer(question, false))">NO</button></span>
+                                <span class="question-no"><button onclick="@(() => Answer(question, true))">YES</button></span>
+                            }
+
+                        </div>
+                    }
+                </div>
+            }
+
+            <h2>Guesses</h2>
+            @if (_game.Guesses.Any())
+            {
+                <div class="guesses">
+                    @foreach (var guess in _game.Guesses)
+                    {
+                        <div class="guess">@guess</div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="guess">(No guesses - yet!)</div>
+            }
+        </div>
+    }
+}
+else
+{
+    <div>Loading...</div>
+}
+
+@functions {
+
+    private async Task Answer(QuestionResponse question, bool answer)
+    {
+        try
+        {
+            var questionIndex = _game.Questions.IndexOf(question);
+            _game = await Http.PostJsonAsync<GameResponse>(
+                $"api/Game/{Id}/answer/{questionIndex}",
+                new AnswerModel
+                {
+                    Answer = answer
+                });
+        }
+        catch (Exception e)
+        {
+            _error = true;
+            _errorMessage = e.Message;
+        }
+    }
+
+
+}

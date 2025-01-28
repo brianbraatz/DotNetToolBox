@@ -1,0 +1,52 @@
+﻿<br />
+<div class="method-elem">
+    <h3 id="{$MethodHash}">{$MethodName}{$MethodParameters}</h3>
+    <div class="method-content">
+        {if $HasCode == true}
+        <pre class="brush: csharp;">
+{$Code}
+        </pre>
+        {/if $HasCode}
+
+        {if $HasParameter == true}
+        <table class="parameter">
+            <caption>Parameters</caption>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th class="elem-name">Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {$Parameters}
+            </tbody>
+        </table>
+        {/if $HasParameter}
+
+        {if $HasReturn == true}
+        <table class="parameter">
+            <caption>Return</caption>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {if $HasReturnType == true}
+                    <td aria-label="Type"><span class="specific-element">{$MethodReturnType}</span></td>
+                    {/if $HasReturnType}
+                    <td aria-label="Description">{$MethodReturnComment}</td>
+                </tr>
+            </tbody>
+        </table>
+        {/if $HasReturn}
+
+        <div class="elem-content">
+            {$MethodComment}
+        </div>
+    </div>
+
+</div>

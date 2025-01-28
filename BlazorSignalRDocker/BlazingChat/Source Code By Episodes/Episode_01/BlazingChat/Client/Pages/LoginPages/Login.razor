@@ -1,0 +1,80 @@
+@page "/"
+@layout LoginLayout
+@using Microsoft.AspNetCore.Components.Authorization
+@using BlazingChat.Shared.ViewModels
+@using BlazingChat.Shared.Models
+@using Newtonsoft.Json
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject HttpClient HttpClient
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorageService
+
+<h2><b>Login</b></h2>
+<hr>
+
+<EditForm Model="@_loginViewModel" OnValidSubmit="LoginClick">
+     <DataAnnotationsValidator />
+
+    <div class="col-12 row">
+        <input type="text" @bind="_loginViewModel.EmailAddress" class="form-control" placeholder="email address">
+        <ValidationMessage For="@(() => _loginViewModel.EmailAddress)" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <input type="password" @bind="_loginViewModel.Password" class="form-control" placeholder="password">
+        <ValidationMessage For="@(() => _loginViewModel.Password)" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <button class="btn btn-danger">Login</button>
+        <span>&nbsp;</span>
+        <button class="btn btn-primary" @onclick="@(e => NavigationManager.NavigateTo("register/"))">Register</button>
+    </div>
+</EditForm>
+
+<ExternalLogins></ExternalLogins>
+
+@code{
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationStateTask { get; set; }
+    private LoginViewModel _loginViewModel { get; set; } = new LoginViewModel();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var user = (await authenticationStateTask).User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/profile/" + 0);
+        }
+        else
+        {
+            _loginViewModel.EmailAddress = "john.smith@gmail.com";
+            _loginViewModel.Password = "john.smith";
+        }
+    }
+
+    private async Task LoginClick()
+    {
+        User user = _loginViewModel;
+
+        string serializedUser = JsonConvert.SerializeObject(user);
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "user/login");
+        requestMessage.Content = new StringContent(serializedUser);
+
+        requestMessage.Content.Headers.ContentType
+            = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+        var response = await HttpClient.SendAsync(requestMessage);
+
+        var responseStatusCode = response.StatusCode;
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        user = JsonConvert.DeserializeObject<User>(responseBody);
+        
+        NavigationManager.NavigateTo("/profile",true);
+
+    }
+
+}

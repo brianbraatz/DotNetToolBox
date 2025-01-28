@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  chatService:
+    build:
+      context: .
+      dockerfile: signalr_scale_out/Dockerfile
+    ports: 
+      - "44345:80"
+  redis:
+    image: bitnami/redis
+    ports:
+      - "6379:6379"
+    environment: 
+      REDIS_PASSWORD: "password123"

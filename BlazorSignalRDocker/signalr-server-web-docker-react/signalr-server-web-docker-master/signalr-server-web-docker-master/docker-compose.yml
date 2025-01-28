@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+#   db:
+#     image: postgres
+#     volumes:
+#       - ./tmp/db:/var/lib/postgresql/data
+#     environment:
+#       POSTGRES_PASSWORD: password
+    server-signal-r:
+        image: ${DOCKER_REGISTRY-}server-signal-r
+        container_name: server-signal-r
+        hostname: server-signal-r
+        ports:
+            - 5000:80
+            - 5001:443
+        build:
+            context: ./ServerSignalR
+            dockerfile: ./Dockerfile
+        environment:
+            # - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=https://+;http://+
+            - ASPNETCORE_Kestrel__Certificates__Default__Password=mypass123
+            - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+        volumes:
+            - ${USERPROFILE}\.aspnet\https:/https/
+        # depends_on:
+        #   - db
+    signalr-webapp:
+        image: ${DOCKER_REGISTRY-}signalr-webapp
+        container_name: signalr-webapp
+        hostname: signalr-webapp
+        ports:
+            - 4000:80
+            - 4001:443
+        build:
+            context: ./WebApp
+            dockerfile: ./Dockerfile
+        environment:
+            # - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=https://+;http://+
+            - ASPNETCORE_Kestrel__Certificates__Default__Password=mypass123
+            - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+        volumes:
+            - ${USERPROFILE}\.aspnet\https:/https/
+        # depends_on:
+        #   - db

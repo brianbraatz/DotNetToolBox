@@ -1,0 +1,70 @@
+﻿@page "/reports"
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.Extensions.Options;
+@using ReportApp.Shared
+@using ReportApp.Shared.Models;
+
+<PageTitle>Reports</PageTitle>
+
+<h1>Reports</h1>
+
+<p>This component demonstrates fetching data from the server with SignalR</p>
+
+@if (reports == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Records Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var report in reports)
+            {
+                <tr>
+                    <td>@report.Date.ToShortDateString()</td>
+                    <td>@report.DataCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Report>? reports;
+    private HubConnection? _reportDataHubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await StartHubConnection();
+        SetRefreshDataListener();
+    }
+
+    private async Task StartHubConnection()
+    {
+        var apiAddress = "https://localhost:7077";
+
+        var sensorDataUrl = ($"{apiAddress}/reports");
+        _reportDataHubConnection = new HubConnectionBuilder()
+                        .WithUrl(sensorDataUrl)
+                        .Build();
+
+        await _reportDataHubConnection.StartAsync();
+    }
+
+    private void SetRefreshDataListener()
+    {
+        var methodName = "TransferReportData";
+
+        _reportDataHubConnection!.On<List<Report>>(methodName, (data) =>
+        {
+            reports = data;
+            StateHasChanged();
+        });
+    }
+}

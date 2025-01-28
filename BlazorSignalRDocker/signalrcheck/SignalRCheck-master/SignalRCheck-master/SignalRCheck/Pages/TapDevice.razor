@@ -1,0 +1,42 @@
+﻿@page "/TapDevice"
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager NavigationManager
+
+<h3>SignalR</h3>
+<div class="container-fluid">
+    <div style="background-color:#d8e2dc;border-radius:20px;" class="p-3">
+        <div class="row mt-3">
+            <div class="col-md-5">
+                <InputText id="device" @bind-Value="DeviceName" class="form-control" />
+                <button type="button" class="btn btn-warning btn-sm" @onclick="@DeivceTap">Listen To Tap</button>
+                @userid
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    private string DeviceName = "TestDevice";
+    private string userid = "";
+    private string _hubUrl;
+    private HubConnection _hubConnection;
+
+
+    private async Task DeivceTap()
+    {
+        string baseUrl = NavigationManager.BaseUri;
+        _hubUrl = baseUrl.TrimEnd('/') + TapDeviceHub.HubUrl;
+        //string url = $"{_hubUrl}?deviceName={DeviceName}";
+        string url = $"{_hubUrl}";
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(url)
+            .Build();
+        _hubConnection.On<string, string>("OnTap", (deviceName, userID) =>
+        {
+            if (DeviceName == deviceName)
+            {
+                this.userid = userID;
+            }
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}

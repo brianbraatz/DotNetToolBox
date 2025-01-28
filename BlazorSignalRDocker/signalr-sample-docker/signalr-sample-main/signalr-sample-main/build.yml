@@ -1,0 +1,16 @@
+trigger:
+  - master
+
+variables:
+  - group: signalr-sample
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: pipeline-templates
+
+extends:
+  template: templates\c_sharp\template.yml@templates
+  

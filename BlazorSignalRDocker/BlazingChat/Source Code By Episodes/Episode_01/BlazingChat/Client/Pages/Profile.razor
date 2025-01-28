@@ -1,0 +1,94 @@
+@page "/profile"
+@using BlazingChat.Shared.ViewModels
+@using BlazingChat.Shared.Models
+@inject HttpClient HttpClient
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorageService
+@inject IJSRuntime JSRuntime
+
+
+<h2><b>Profile</b></h2> 
+<hr />
+
+<EditForm Model="_profileViewModel" OnValidSubmit="SubmitForm">
+    <div class="col-12 row">
+
+        <div class="col-6">
+            @if (!string.IsNullOrEmpty(imageDataUri))
+            {
+                <img src="@imageDataUri" />
+            }
+            else
+            {
+                <img src="img/blank-profile.png">
+            }            
+            <br />
+            
+        </div>
+
+        <div class="col-6">
+            <DataAnnotationsValidator />
+
+            <input class="form-control" @bind="_profileViewModel.FirstName" placeholder="first name">
+            <ValidationMessage For="@(() => _profileViewModel.FirstName)" />
+            <br/>
+            <input class="form-control" @bind="_profileViewModel.LastName" placeholder="last name">
+            <ValidationMessage For="@(() => _profileViewModel.LastName)" />
+            <br/>
+            <input class="form-control" @bind="_profileViewModel.EmailAddress" placeholder="email address">
+            <ValidationMessage For="@(() => _profileViewModel.EmailAddress)" />
+            <br/>
+            <InputDate class="form-control default-date-picker" @bind-Value="_profileViewModel.DateOfBirth" placeholder="date of birth"></InputDate>            
+            <br/>    
+            <textarea class="form-control" @bind="_profileViewModel.AboutMe" placeholder="about me"></textarea>
+            <ValidationMessage For="@(() => _profileViewModel.AboutMe)" />
+            <br/>
+            <button class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</EditForm>
+
+<br />
+
+@code {
+    private ProfileViewModel _profileViewModel = new ProfileViewModel();
+    string status;
+    string imageDataUri;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = await LocalStorageService.GetItemAsync<long>("userId");
+
+        if (userId > 0)
+        {
+            User user = await HttpClient.GetFromJsonAsync<User>("user/getprofile/" + userId);            
+            await JSRuntime.InvokeVoidAsync("setTheme", "site" + user.DarkTheme);
+            _profileViewModel = user;
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        User user = _profileViewModel;
+
+        await HttpClient.PutAsJsonAsync("user/updateprofile/" + user.UserId, user);
+    }
+
+    private async Task HandleSelection(IFileListEntry[] files)
+    {
+        var rawFile = files.FirstOrDefault();
+        if (rawFile != null)
+        {
+            // Load as an image file in memory
+            var format = "image/jpeg";
+            //var imageFile = await rawFile.ToImageFileAsync(format, 640, 480);
+            var imageFile = await rawFile.ToImageFileAsync(format, 368, 368);
+            var ms = new MemoryStream();
+            await imageFile.Data.CopyToAsync(ms);
+
+            // Make a data URL so we can display it
+            imageDataUri = $"data:{format};base64,{Convert.ToBase64String(ms.ToArray())}";
+
+            status = $"Finished loading {ms.Length} bytes from {imageFile.Name}";
+        }
+    }
+}

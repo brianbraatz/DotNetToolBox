@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+    <meta name="author" content="Aona Suzutsuki" />
+    <title>{$Title}</title>
+    <link rel="stylesheet" type="text/css" href="{$RelativePath}css/main.css" />
+    <link rel="stylesheet" type="text/css" href="{$RelativePath}css/menu-icon.css" />
+    <link rel="stylesheet" type="text/css" href="{$RelativePath}css/menu-anim.css" />
+    <script src="{$RelativePath}js/jquery-1.7.1.min.js"></script>
+    <script src="{$RelativePath}js/common.js"></script>
+    <style type="text/css">
+    </style>
+    <script>
+        $(function () {
+            registMenu();
+        });
+    </script>
+</head>
+<body>
+
+    <div id="body-container">
+
+        <div id="menu-container">
+            <div id="top-menu-bt-cover">
+                <a class="menu-trigger" href="javascript:void(0);">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </a>
+            </div>
+        </div>
+
+        <div id="menu">
+            {$Menu}
+        </div>
+
+        <div id="body-content" class="clearfix">
+
+            <div>
+                {if $HasClass == true}
+                <h3>Classes</h3>
+                {$ClassItems}
+                {/if $HasClass}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="footer">
+        XMLDocumentToHtml: Copyright (C) 2018 - 2020 Aona Suzutsuki.
+    </div>
+
+</body>
+</html>

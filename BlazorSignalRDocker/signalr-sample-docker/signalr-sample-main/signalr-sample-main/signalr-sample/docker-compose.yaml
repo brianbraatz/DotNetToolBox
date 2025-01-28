@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:     
+  signalr-hub:
+    image: signalr-hub
+    container_name: signalr-hub
+    build:
+      context: ./HubSample
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+
+  signalr-client-A:
+    image: signalr-client
+    container_name: signalr-client-A
+    build:
+      context: ./ClientSample
+      dockerfile: Dockerfile
+    depends_on:
+      - signalr-hub
+
+  signalr-client-B:
+    image: signalr-client
+    container_name: signalr-client-B
+    build:
+      context: ./ClientSample
+      dockerfile: Dockerfile
+    depends_on:
+      - signalr-hub
