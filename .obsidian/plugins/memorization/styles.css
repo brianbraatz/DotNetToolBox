@@ -1,0 +1,28 @@
+.memorizationModal {
+  height: 5000px;
+  max-height: 300px;
+}
+  
+.memorizationSuggestionsContainer {
+  background-color: #2A2A2A;
+  border: 7px solid #2A2A2A;
+  border-radius: 3px;
+  max-height: 150px;
+  overflow: auto;
+  visibility: hidden;
+  position: absolute;
+  width: 92%;
+}
+
+.memorizationSearchInput {
+  padding-top: -5;
+  width: 100%;
+}
+
+.memorizationItemEnter {
+  color: grey
+}
+
+.memorizationItemLeave {
+  color: white
+}

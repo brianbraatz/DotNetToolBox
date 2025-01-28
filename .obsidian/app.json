@@ -1,0 +1,7 @@
+{
+  "attachmentFolderPath": "./",
+  "newFileLocation": "current",
+  "newLinkFormat": "absolute",
+  "showUnsupportedFiles": true,
+  "uriCallbacks": true
+}

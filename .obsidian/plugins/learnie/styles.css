@@ -1,0 +1,42 @@
+.diff-insert {
+    background: rgb(0, 61, 0);
+}
+
+.diff-delete {
+    background: rgb(79, 0, 0);
+}
+
+.diff-delete:has(img), .diff-insert:has(img) {
+    display: flex;
+    padding: 8px;
+}
+
+
+.tag-checkbox-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 16px 0;
+}
+
+.tag-checkbox-container > .setting-item {
+    padding: 0px;
+}
+
+.modal-button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.modal-button-container button {
+    min-width: 80px;
+}
+
+.modal-button-container > .setting-item {
+    padding: 0px;
+}
